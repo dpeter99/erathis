@@ -29,7 +29,7 @@ namespace Erathis
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddAuthorization();
+            //services.AddAuthorization();
 
             services.AddAuthentication(options =>
             {
@@ -39,6 +39,11 @@ namespace Erathis
             {
                 o.Authority = Configuration["Jwt:Authority"];
                 o.Audience = Configuration["Jwt:Audience"];
+                if (Environment.IsDevelopment())
+                {
+                    o.RequireHttpsMetadata = false;
+                }
+
                 o.Events = new JwtBearerEvents()
                 {
                     OnAuthenticationFailed = c =>
@@ -65,6 +70,8 @@ namespace Erathis
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            Microsoft.IdentityModel.Logging.IdentityModelEventSource.ShowPII = true;
+            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
